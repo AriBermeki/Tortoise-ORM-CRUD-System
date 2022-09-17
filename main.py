@@ -9,6 +9,10 @@ import json
 
 
 app = FastAPI()
+
+ #________________hier wird eine  Connection inerzializerd und mit der DatenBank verbunden_______________#
+
+
 register_tortoise(
     app,
     db_url='sqlite://tortoise.db',
@@ -17,28 +21,69 @@ register_tortoise(
     add_exception_handlers=True
 )
 
+ 
+
 
 @app.post('/create/new_user')
 async def create(user: UserIn_Pydantic):
-    new_object = await User.create(**user.dict(exclude_unset=True)) #hier wird eine new user inerzializerd und DatenBank gespeichert
+
+
+#________________hier wird eine  user inerzializerd und in der DatenBank gespeichert_______________#
+
+
+    new_object = await User.create(**user.dict(exclude_unset=True)) 
     return await User_Pydantic.from_tortoise_orm(new_object)
+
+
+
 
 
 @app.get('/user/data')
 async def read():
-    return await User_Pydantic.from_queryset(User.all()) #hier wird alle new user aus der DatenBank abgrufen
+
+
+#________________hier wird alle  user aus der DatenBank abgrufen__________________#
+
+
+    return await User_Pydantic.from_queryset(User.all()) 
+
+
+
 
 
 @app.get('/user/{user_id}')
 async def read_by_id(user_id:int):
-    return await User_Pydantic.from_queryset_single(User.get(id=user_id))  #hier wird eine new user mit seiner ID aus der DatenBank abgrufen
+
+
+#__________________hier wird eine  user mit seiner ID aus der DatenBank abgrufen______________#
+
+
+    return await User_Pydantic.from_queryset_single(User.get(id=user_id)) 
+
+
+
+
 
 @app.put('/user/{user_id}')
 async def update(user_id:int, user: UserIn_Pydantic):
+
+
+
+#_______________hier wird eine  user mit seiner ID aus der DatenBank abgrufen und geändert_________________#
+
+
     updated_data = await User.filter(id= user_id).update(**user.dict(exclude_unset=True))
     return f'The User with Id: {user_id} has been Successful updated: {updated_data}'
 
+
+
 @app.delete('/user/{user_id}')
 async def delete(user_id:int):
-    delete_data = await User.filter(id= user_id).delete() #hier wird eine new user mit seiner ID aus der DatenBank gelöscht
+
+
+#_______________hier wird eine  user mit seiner ID aus der DatenBank gelöscht________________#
+
+
+
+    delete_data = await User.filter(id= user_id).delete() 
     return f'The User with Id: {user_id} has been Successful deleted: {delete_data}'
